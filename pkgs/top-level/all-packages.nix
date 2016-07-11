@@ -3643,6 +3643,8 @@ in
 
   tlspool = callPackage ../tools/networking/tlspool { };
 
+  tlspool-gui = callPackage ../tools/networking/tlspool-gui { };
+
   tmate = callPackage ../tools/misc/tmate { };
 
   tmpwatch = callPackage ../tools/misc/tmpwatch  { };
