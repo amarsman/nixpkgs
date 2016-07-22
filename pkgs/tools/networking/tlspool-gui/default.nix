@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, qt5, cmake, tlspool }:
+{ stdenv, fetchurl, qt5, cmake, git, tlspool }:
 
 stdenv.mkDerivation rec {
   name = "tlspool-gui-${version}";
-  version = "0.0.1";
+  version = "0.0.2";
   src = ./../../../../../tlspool-gui/. ;
 
 #  src = fetchgit {
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 #  };
 
   buildInputs = [
-    qt5.qtbase qt5.qtsvg qt5.qttranslations cmake tlspool
+    qt5.qtbase qt5.qtsvg qt5.qttranslations cmake git tlspool
   ];
 
   installPhase = ''
