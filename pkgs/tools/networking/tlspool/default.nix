@@ -2,7 +2,7 @@
 
 { pkgs, stdenv, fetchurl, unzip, libtool, pkgconfig, git, p11_kit,
   libtasn1, db, openldap, libmemcached, cyrus_sasl, openssl, softhsm, bash,
-  python, libkrb5, quickder, unbound, ldns, gnupg, gnutls35,
+  python, libkrb5, quickder, unbound, ldns, gnupg, gnutls35, swig,
   useSystemd ? true, systemd
 }:
 
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ python unbound softhsm openldap gnutls35 p11_kit.dev p11_kit.out gnupg ];
   buildInputs = [ pkgconfig unzip git libtasn1 db libmemcached cyrus_sasl openssl bash quickder
-                  libkrb5 ldns libtool ]
+                  libkrb5 ldns libtool swig ]
                 ++ stdenv.lib.optional useSystemd systemd;
 
   phases = [ "unpackPhase" "patchPhase" "buildPhase" "installPhase" ];
