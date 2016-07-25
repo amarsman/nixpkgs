@@ -2,8 +2,8 @@
 
 { pkgs, stdenv, fetchurl, unzip, libtool, pkgconfig, git, p11_kit,
   libtasn1, db, openldap, libmemcached, cyrus_sasl, openssl, softhsm, bash,
-  python, libkrb5, quickder, unbound, ldns, gnupg, gnutls35, swig,
-  useSystemd ? true, systemd
+  python, libkrb5, quickder, unbound, ldns, gnupg, gnutls35,
+  useSystemd ? true, systemd, swig
 }:
 
 #let
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ python unbound softhsm openldap gnutls35 p11_kit.dev p11_kit.out gnupg ];
   buildInputs = [ pkgconfig unzip git libtasn1 db libmemcached cyrus_sasl openssl bash quickder
-                  libkrb5 ldns libtool swig ]
+                  libkrb5 ldns libtool swig pkgs.pythonPackages.pip ]
                 ++ stdenv.lib.optional useSystemd systemd;
 
   phases = [ "unpackPhase" "patchPhase" "buildPhase" "installPhase" ];
@@ -47,10 +47,13 @@ stdenv.mkDerivation rec {
       substituteInPlace etc/tlspool.conf \
       --replace "dnssec_rootkey ../etc/root.key" "dnssec_rootkey $out/etc/root.key" \
       --replace "pkcs11_path /usr/local/lib/softhsm/libsofthsm2.so" "pkcs11_path ${softhsm}/lib/softhsm/libsofthsm2.so"
-'';
+      substituteInPlace lib/Makefile \
+      --replace "DESTDIR=\$(DESTDIR) PREFIX=\$(PREFIX)" "DESTDIR=\$(DESTDIR) PREFIX=\$(PREFIX) SWIG=${swig}/bin/swig"
+  '';
 
   installPhase = ''
     mkdir -p $out/bin $out/lib $out/sbin $out/man $out/etc/tlspool/ $out/include/${pname}/pulleyback
+    mkdir -p $out/${python.sitePackages}/tlspool
     make DESTDIR=$out PREFIX=/ all
     make DESTDIR=$out PREFIX=/ install
     cp -R etc/* $out/etc/tlspool/
