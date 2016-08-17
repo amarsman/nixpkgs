@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   name = "tlspool-gui-${version}";
-  version = "0.0.2";
+  version = "0.0.3";
   src = ./../../../../../tlspool-gui/. ;
 
 #  src = fetchgit {
