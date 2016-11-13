@@ -2,7 +2,7 @@
 , mysql, libxml2, readline, zlib, curl, postgresql, gettext
 , openssl, pkgconfig, sqlite, config, libjpeg, libpng, freetype
 , libxslt, libmcrypt, bzip2, icu, openldap, cyrus_sasl, libmhash, freetds
-, uwimap, pam, gmp, apacheHttpd, libiconv }:
+, uwimap, pam, gmp, apacheHttpd, libiconv, systemd }:
 
 let
 
@@ -19,11 +19,12 @@ let
 
       enableParallelBuilding = true;
 
-      buildInputs = [ flex bison pkgconfig ];
+      buildInputs = [ flex bison pkgconfig systemd ];
 
       configureFlags = [
         "EXTENSION_DIR=$(out)/lib/php/extensions"
-      ] ++ lib.optional stdenv.isDarwin "--with-iconv=${libiconv}";
+      ] ++ lib.optional stdenv.isDarwin "--with-iconv=${libiconv}"
+        ++ lib.optional stdenv.isLinux  "--with-fpm-systemd";
 
       flags = {
 
@@ -107,13 +108,13 @@ let
         };
 
         mysql = {
-          configureFlags = ["--with-mysql=${mysql.lib}"];
-          buildInputs = [ mysql.lib ];
+          configureFlags = ["--with-mysql"];
+          buildInputs = [ mysql.lib.dev ];
         };
 
         mysqli = {
-          configureFlags = ["--with-mysqli=${mysql.lib}/bin/mysql_config"];
-          buildInputs = [ mysql.lib ];
+          configureFlags = ["--with-mysqli=${mysql.lib.dev}/bin/mysql_config"];
+          buildInputs = [ mysql.lib.dev ];
         };
 
         mysqli_embedded = {
@@ -123,8 +124,8 @@ let
         };
 
         pdo_mysql = {
-          configureFlags = ["--with-pdo-mysql=${mysql.lib}"];
-          buildInputs = [ mysql.lib ];
+          configureFlags = ["--with-pdo-mysql=${mysql.lib.dev}"];
+          buildInputs = [ mysql.lib.dev ];
         };
 
         bcmath = {
@@ -257,6 +258,8 @@ let
         calendarSupport = config.php.calendar or true;
       };
 
+      hardeningDisable = [ "bindnow" ];
+
       configurePhase = ''
         # Don't record the configure flags since this causes unnecessary
         # runtime dependencies.
@@ -268,7 +271,7 @@ let
         done
 
         [[ -z "$libxml2" ]] || export PATH=$PATH:$libxml2/bin
-        ./configure --with-config-file-scan-dir=/etc --with-config-file-path=$out/etc --prefix=$out $configureFlags
+        ./configure --with-config-file-scan-dir=/etc/php.d --with-config-file-path=$out/etc --prefix=$out $configureFlags
       '';
 
       postInstall = ''
@@ -297,20 +300,13 @@ let
     });
 
 in {
-
-  php55 = generic {
-    version = "5.5.37";
-    sha256 = "122xj115fjl6rqlxqqjzvh16fbm801yqcmfh9hn7zwfa8sz0wf6j";
-  };
-
   php56 = generic {
-    version = "5.6.23";
-    sha256 = "1isq6pym20nwsf2j1jdz321vck9xd6g86q2b13vycxyjjq42ikgs";
+    version = "5.6.26";
+    sha256 = "0dk2ifn50iv8jvw2jyw2pr9xqnkksxfv9qbpay84na54hf0anynl";
   };
 
   php70 = generic {
-    version = "7.0.8";
-    sha256 = "13bww8qz35crj3s2kzl50lqy28m83xms1qrz66qhf3j9i2ippp36";
+    version = "7.0.11";
+    sha256 = "1wgpkfzpiap29nxjzqjjvpgirpg61n61xbqq9f25i60lq6fp56zr";
   };
-
 }

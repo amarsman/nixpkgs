@@ -3,13 +3,13 @@
 
 stdenv.mkDerivation rec {
   name = "elixir-${version}";
-  version = "1.3.0";
+  version = "1.3.3";
 
   src = fetchFromGitHub {
     owner = "elixir-lang";
     repo = "elixir";
     rev = "v${version}";
-    sha256 = "06y8v239d5r3zr9s9mw19ws99qm7niicz69pqhawvg5qm4qxhvkr";
+    sha256 = "1l4ff3awil1nzrgd4pv4bx6n9ml83ci4czplv03yfz18q7jbipq2";
   };
 
   buildInputs = [ erlang rebar makeWrapper ];
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
      b=$(basename $f)
       if [ $b == "mix" ]; then continue; fi
       wrapProgram $f \
-        --prefix PATH ":" "${erlang}/bin:${coreutils}/bin:${curl.bin}/bin:${bash}/bin" \
+        --prefix PATH ":" "${stdenv.lib.makeBinPath [ erlang coreutils curl bash ]}" \
         --set CURL_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
     done
 

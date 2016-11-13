@@ -2,12 +2,13 @@
 , glib
 , gtk2
 , gst_all_1
-, gnome
+, gnome2
 , libnotify
 , libxml2
 , libunique
 , intltool
 , gst_plugins ? with gst_all_1; [ gst-plugins-base gst-plugins-good gst-plugins-ugly ]
+, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
@@ -28,23 +29,18 @@ stdenv.mkDerivation rec {
     glib
     gtk2
     gst_all_1.gstreamer
-    gst_plugins
-    gnome.GConf
-    gnome.gnome_icon_theme
+    gnome2.GConf
+    gnome2.gnome_icon_theme
     libnotify
     libxml2
     libunique
     intltool
-  ];
+    wrapGAppsHook
+  ] ++ gst_plugins;
 
-  propagatedUserEnvPkgs = [ gnome.GConf.out ];
+  propagatedUserEnvPkgs = [ gnome2.GConf.out ];
 
   enableParallelBuilding = true;
-
-  preFixup = ''
-    wrapProgram $out/bin/alarm-clock-applet \
-      --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0"
-  '';
 
   meta = with stdenv.lib; {
     homepage = http://alarm-clock.pseudoberries.com/;

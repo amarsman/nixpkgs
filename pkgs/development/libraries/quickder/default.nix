@@ -3,21 +3,16 @@
 stdenv.mkDerivation rec {
   pname = "quickder";
   name = "${pname}-${version}";
-  version = "0.1-RC5";
+  version = "1.0-RC1";
 
   src = fetchFromGitHub {
-    sha256 = "0dslqvf28jpm7vv6mggwqpgc9xww1146crm73igrm5lyg9700cj4";
-    rev = "31acbe67846f5e0ba3d1728ee30287f03f8857e4";
-    # rev = "version-${version}";
+    sha256 = "05gw5dqkw3l8kwwm0044zpxhcp7sxicx9wxbfyr49c91403p870w";
+    rev = "version-${version}";
     owner = "vanrein";
     repo = "quick-der";
   };
 
-  # For development you can use src = ../../../../../quick-der/. ;
-
-  phases = [ "unpackPhase" "patchPhase" "installPhase" ];
-
-  buildInputs = [ python which asn2quickder bash ];
+  buildInputs = [ which asn2quickder bash ];
 
   patchPhase = ''
     substituteInPlace Makefile \
@@ -28,7 +23,7 @@ stdenv.mkDerivation rec {
 
   installFlags = "ASN2QUICKDER_DIR=${asn2quickder}/bin ASN2QUICKDER_CMD=${asn2quickder}/bin/asn2quickder";
   installPhase = ''
-    mkdir -p $out/bin $out/lib $out/sbin $out/man
+    mkdir -p $out/lib $out/man
     make DESTDIR=$out PREFIX=/ all
     make DESTDIR=$out PREFIX=/ install
     '';

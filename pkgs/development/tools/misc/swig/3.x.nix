@@ -23,12 +23,12 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  meta = {
+  meta = with stdenv.lib; {
     description = "SWIG, an interface compiler that connects C/C++ code to higher-level languages";
     homepage = http://swig.org/;
-    # Licensing is a mess: http://www.swig.org/Release/LICENSE .
-    license = "BSD-style";
-    platforms = lib.platforms.linux ++ lib.platforms.darwin;
-    maintainers = [ lib.maintainers.urkud lib.maintainers.wkennington ];
+    # Different types of licenses available: http://www.swig.org/Release/LICENSE .
+    license = licenses.gpl3Plus;
+    platforms = with platforms; linux ++ darwin;
+    maintainers = with maintainers; [ urkud wkennington ];
   };
 }

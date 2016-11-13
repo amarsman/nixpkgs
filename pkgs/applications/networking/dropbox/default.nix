@@ -3,7 +3,7 @@
 , libdrm, libffi, libICE, libSM
 , libX11, libXcomposite, libXext, libXmu, libXrender, libxcb
 , libxml2, libxslt, ncurses, zlib
-, qtbase, qtdeclarative, qtquick1, qtwebkit
+, qtbase, qtdeclarative, qtwebkit
 }:
 
 # this package contains the daemon version of dropbox
@@ -23,17 +23,17 @@
 let
   # NOTE: When updating, please also update in current stable,
   # as older versions stop working
-  version = "4.4.29";
+  version = "11.4.22";
   sha256 =
     {
-      "x86_64-linux" = "1ff01vqi9jiwhkqm81rh321bsz4brl11xal2xzm9gll7s2m8lz06";
-      "i686-linux" = "0lwvvyxy5xyxh0b2g8a9bdy0y2hgpbak4n6q6b30167fvpj1ad1i";
+      "x86_64-linux" = "1fpwknf8as2h6d8d11nb8i0q4ap5r6fvii919b3pj5d29jgfd25l";
+      "i686-linux"   = "1dv60ijb93464js34vk3l8hm8a57zdpkzhrfkv2kp3v3172cqj8s";
     }."${stdenv.system}" or (throw "system ${stdenv.system} not supported");
 
   arch =
     {
       "x86_64-linux" = "x86_64";
-      "i686-linux" = "x86";
+      "i686-linux"   = "x86";
     }."${stdenv.system}" or (throw "system ${stdenv.system} not supported");
 
   # relative location where the dropbox libraries are stored
@@ -45,7 +45,7 @@ let
       libX11 libXcomposite libXext libXmu libXrender libxcb libxml2 libxslt
       ncurses zlib
 
-      qtbase qtdeclarative qtquick1 qtwebkit
+      qtbase qtdeclarative qtwebkit
     ];
 
   desktopItem = makeDesktopItem {
@@ -74,7 +74,7 @@ in stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p "$out/${appdir}"
-    cp -r "dropbox-lnx.${arch}-${version}"/* "$out/${appdir}/"
+    cp -r --no-preserve=mode "dropbox-lnx.${arch}-${version}"/* "$out/${appdir}/"
 
     rm "$out/${appdir}/libdrm.so.2"
     rm "$out/${appdir}/libffi.so.6"
@@ -104,6 +104,8 @@ in stdenv.mkDerivation {
     RPATH="${ldpath}:$out/${appdir}"
     makeWrapper "$out/${appdir}/dropbox" "$out/bin/dropbox" \
       --prefix LD_LIBRARY_PATH : "$RPATH"
+
+    chmod 755 $out/${appdir}/dropbox
   '';
 
   fixupPhase = ''

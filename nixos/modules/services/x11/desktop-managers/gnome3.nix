@@ -25,9 +25,8 @@ let
     '';
   };
 
-  nixos-gsettings-desktop-schemas = pkgs.stdenv.mkDerivation {
-    name = "nixos-gsettings-desktop-schemas";
-    buildCommand = ''
+  nixos-gsettings-desktop-schemas = pkgs.runCommand "nixos-gsettings-desktop-schemas" {}
+    ''
      mkdir -p $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas
      cp -rf ${gnome3.gsettings_desktop_schemas}/share/gsettings-schemas/gsettings-desktop-schemas*/glib-2.0/schemas/*.xml $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas
 
@@ -46,7 +45,6 @@ let
 
      ${pkgs.glib.dev}/bin/glib-compile-schemas $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas/
     '';
-  };
 
 in {
 
@@ -84,7 +82,7 @@ in {
 
     environment.gnome3.packageSet = mkOption {
       default = null;
-      example = literalExample "pkgs.gnome3_18";
+      example = literalExample "pkgs.gnome3_20";
       description = "Which GNOME 3 package set to use.";
       apply = p: if p == null then pkgs.gnome3 else p;
     };
@@ -121,7 +119,9 @@ in {
     services.upower.enable = config.powerManagement.enable;
     services.dbus.packages = mkIf config.services.printing.enable [ pkgs.system-config-printer ];
     services.colord.enable = mkDefault true;
+    services.packagekit.enable = mkDefault true;
     hardware.bluetooth.enable = mkDefault true;
+    services.xserver.libinput.enable = mkDefault true; # for controlling touchpad settings via gnome control center
 
     fonts.fonts = [ pkgs.dejavu_fonts pkgs.cantarell_fonts ];
 

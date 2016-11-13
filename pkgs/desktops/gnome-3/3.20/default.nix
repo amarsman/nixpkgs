@@ -3,7 +3,7 @@
 let
 
   pkgsFun = overrides:
-    let 
+    let
       self = self_ // overrides;
       self_ = with self; {
 
@@ -35,7 +35,7 @@ let
     gnome-clocks gnome-music gnome-tweak-tool gnome-photos
     nautilus-sendto dconf-editor vinagre gnome-weather gnome-logs
     gnome-maps gnome-characters gnome-calendar accerciser gnome-nettool
-    gnome-getting-started-docs
+    gnome-getting-started-docs gnome-packagekit gnome-software
   ];
 
   gamesPackages = with gnome3; [ swell-foop lightsoff iagno
@@ -45,20 +45,15 @@ let
     hitori gnome-taquin
   ];
 
-  inherit (pkgs) glib gtk2 webkitgtk24x webkitgtk212x gtk3 gtkmm3 libcanberra;
+  inherit (pkgs) glib gtk2 webkitgtk24x webkitgtk212x gtk3 gtkmm3 libcanberra_gtk2
+    clutter clutter-gst clutter_gtk cogl gtkvnc;
   inherit (pkgs.gnome2) ORBit2;
   libsoup = pkgs.libsoup.override { gnomeSupport = true; };
   libchamplain = pkgs.libchamplain.override { libsoup = libsoup; };
   orbit = ORBit2;
   gnome3 = self // { recurseForDerivations = false; };
-  clutter = pkgs.clutter_1_26;
-  clutter_gtk = pkgs.clutter_gtk_1_8.override { inherit clutter gtk3; };
-  clutter-gst_2 = pkgs.clutter-gst;
-  clutter-gst = pkgs.clutter-gst_3_0.override { inherit clutter cogl; };
-  cogl = pkgs.cogl_1_22;
   gtk = gtk3;
   gtkmm = gtkmm3;
-  gtkvnc = pkgs.gtkvnc.override { enableGTK3 = true; };
   vala = pkgs.vala_0_32;
   gegl_0_3 = pkgs.gegl_0_3.override { inherit gtk; };
   webkitgtk = webkitgtk212x;
@@ -149,6 +144,8 @@ let
 
   gnome_settings_daemon = callPackage ./core/gnome-settings-daemon { };
 
+  gnome-software = callPackage ./core/gnome-software { };
+
   gnome-system-log = callPackage ./core/gnome-system-log { };
 
   gnome-system-monitor = callPackage ./core/gnome-system-monitor { };
@@ -170,6 +167,8 @@ let
   gsound = callPackage ./core/gsound { };
 
   gtksourceview = callPackage ./core/gtksourceview { };
+
+  gtksourceviewmm = callPackage ./core/gtksourceviewmm { };
 
   gucharmap = callPackage ./core/gucharmap { };
 
@@ -268,8 +267,7 @@ let
   glade = callPackage ./apps/glade { };
 
   gnome-boxes = callPackage ./apps/gnome-boxes {
-    gtkvnc = pkgs.gtkvnc.override { enableGTK3 = true; };
-    spice_gtk = pkgs.spice_gtk.override { enableGTK3 = true; };
+    spice_gtk = pkgs.spice_gtk;
   };
 
   gnome-calendar = callPackage ./apps/gnome-calendar { };
@@ -317,6 +315,8 @@ let
 
   gnome-devel-docs = callPackage ./devtools/gnome-devel-docs { };
 
+  nemiver = callPackage ./devtools/nemiver { };
+
 #### Games
 
   aisleriot = callPackage ./games/aisleriot { };
@@ -359,13 +359,13 @@ let
 
   california = callPackage ./misc/california { };
 
-  geary = callPackage ./misc/geary { 
+  geary = callPackage ./misc/geary {
     webkitgtk = webkitgtk24x;
   };
 
   gfbgraph = callPackage ./misc/gfbgraph { };
 
-  gitg = callPackage ./misc/gitg { 
+  gitg = callPackage ./misc/gitg {
     webkitgtk = webkitgtk24x;
   };
 
@@ -385,11 +385,15 @@ let
 
   gpaste = callPackage ./misc/gpaste { };
 
+  pidgin-im-gnome-shell-extension = callPackage ./misc/pidgin { };
+
   gtkhtml = callPackage ./misc/gtkhtml { };
 
   pomodoro = callPackage ./misc/pomodoro { };
 
   gnome-video-effects = callPackage ./misc/gnome-video-effects { };
+
+  gnome-packagekit = callPackage ./misc/gnome-packagekit { };
 
     };
   in self; # pkgsFun

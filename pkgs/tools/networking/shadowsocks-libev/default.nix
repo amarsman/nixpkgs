@@ -1,17 +1,22 @@
-{ withPolarSSL ? false
+{ withMbedTLS ? true
 , enableSystemSharedLib ? true
 , stdenv, fetchurl, zlib
 , openssl ? null
-, polarssl ? null
+, mbedtls ? null
 , libev ? null
 , libsodium ? null
 , udns ? null
+, asciidoc
+, xmlto
+, docbook_xml_dtd_45
+, docbook_xsl
+, libxslt
 }:
 
 let
 
-  version = "2.4.7";
-  sha256 = "957265cc5339e020d8c8bb7414ab14936e3939dc7355f334aec896ec9b03c6ed";
+  version = "2.5.0";
+  sha256 = "6841e0efa1c01caef5a827f463ee304dc9e48fb4751cc9256316df5ab4490ae0";
 
 in
 
@@ -24,14 +29,14 @@ stdenv.mkDerivation rec {
     inherit sha256;
   };
 
-  buildInputs = [ zlib ]
-                ++ optional (!withPolarSSL) openssl
-                ++ optional withPolarSSL polarssl
-                ++ optional enableSystemSharedLib [libev libsodium udns];
+  buildInputs = [ zlib asciidoc xmlto docbook_xml_dtd_45 docbook_xsl libxslt ]
+                ++ optional (!withMbedTLS) openssl
+                ++ optional withMbedTLS mbedtls
+                ++ optionals enableSystemSharedLib [libev libsodium udns];
 
-  configureFlags = optional withPolarSSL
-                     [ "--with-crypto-library=polarssl"
-                       "--with-polarssl=${polarssl}"
+  configureFlags = optional withMbedTLS
+                     [ "--with-crypto-library=mbedtls"
+                       "--with-mbedtls=${mbedtls}"
                      ]
                    ++ optional enableSystemSharedLib "--enable-system-shared-lib";
 

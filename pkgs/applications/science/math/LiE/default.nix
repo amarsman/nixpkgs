@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   version = "2.2.2";
      # The current version of LiE is 2.2.2, which is more or less unchanged
      # since about the year 2000. Minor bugfixes do get applied now and then.
-  name = "LiE-${version}";
+  name = "lie-${version}";
 
   meta = {
     description = "A Computer algebra package for Lie group computations";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
       characteristics, we refer to the following sources of information.
     ''; # take from the website
 
-    platforms = stdenv.lib.platforms.unix;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ ]; # this package is probably not going to change anyway
   };
 
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     cp -v Lie.exe $out
     cp -v lie $out/bin
 
-    cp -v LEARN LEARN.ind $out
-    cp -v INFO.ind INFO.[0-4] $out
+    cp -v LEARN* $out
+    cp -v INFO* $out
   '';
 }

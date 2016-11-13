@@ -1,29 +1,26 @@
-{ stdenv, fetchFromGitHub, python, pythonPackages, buildPythonPackage, makeWrapper }:
+{ stdenv, fetchFromGitHub, pythonPackages, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "asn2quickder";
   name = "${pname}-${version}";
-  version = "0.6-RC1";
+  version = "0.7-RC1";
 
   src = fetchFromGitHub {
-    sha256 = "0cl0q5mh6nlgwhv13ybw2xv8iwhy60pg9kq0d4wqn2q5nmf35ian";
-    # rev = "version-${version}";
-    rev = "f15d9bfc1160d234972183b9ab623f6c8c461819";
-    owner = "leenaars";
+    sha256 = "0ynajhbml28m4ipbj5mscjcv6g1a7frvxfimxh813rhgl0w3sgq8";
+    rev = "version-${version}";
+    owner = "vanrein";
     repo = "${pname}";
   };
 
-  # Working locally you could use src = ../../../../../asn2quickder/. ;
+  propagatedBuildInputs = with pythonPackages; [ pyparsing makeWrapper ];
 
-  propagatedBuildInputs = [ python pythonPackages.pyparsing makeWrapper ];
-
-  patchPhase = ''
+  patchPhase = with pythonPackages; ''
     substituteInPlace Makefile \
-      --replace '..' '..:$(DESTDIR)/{python.sitePackages}:${pythonPackages.pyparsing}/${python.sitePackages}' \
+      --replace '..' '..:$(DESTDIR)/${python.sitePackages}:${pythonPackages.pyparsing}/${python.sitePackages}' \
     '';
 
   installPhase = ''
-    mkdir -p $out/${python.sitePackages}/
+    mkdir -p $out/${pythonPackages.python.sitePackages}/
     mkdir -p $out/bin $out/lib $out/sbin $out/man
     make DESTDIR=$out PREFIX=/ all
     make DESTDIR=$out PREFIX=/ install
