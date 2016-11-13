@@ -9,7 +9,9 @@ stdenv.mkDerivation rec {
   };
 
   # TODO: separate "out" and "bin"
-  outputs = [ "dev" "out" "man" "docdev" ];
+  outputs = [ "out" "dev" "man" "devdoc" ];
+
+  enableParallelBuilding = true;
 
   buildInputs = [ openssl cyrus_sasl db groff ];
 
@@ -21,13 +23,18 @@ stdenv.mkDerivation rec {
       ++ stdenv.lib.optional stdenv.isFreeBSD "--with-pic"
       ++ stdenv.lib.optional buildStaticLibraries "--enable-static";
 
-  dontPatchELF = 1; # !!!
-
-  # Fixup broken libtool
+  # 1. Fixup broken libtool
+  # 2. Libraries left in the build location confuse `patchelf --shrink-rpath`
+  #    Delete these to let patchelf discover the right path instead.
+  #    FIXME: that one can be removed when https://github.com/NixOS/patchelf/pull/98
+  #    is in Nixpkgs patchelf.
   preFixup = ''
     sed -e 's,-lsasl2,-L${cyrus_sasl.out}/lib -lsasl2,' \
         -e 's,-lssl,-L${openssl.out}/lib -lssl,' \
         -i $out/lib/libldap.la -i $out/lib/libldap_r.la
+
+    rm -rf $out/var
+    rm -r libraries/*/.libs
   '';
 
   meta = with stdenv.lib; {
